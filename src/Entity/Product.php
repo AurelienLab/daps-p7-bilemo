@@ -45,10 +45,17 @@ class Product
     #[Groups(['product', 'product_brand'])]
     private Collection $images;
 
+    /**
+     * @var Collection<int, ProductAttribute>
+     */
+    #[ORM\OneToMany(targetEntity: ProductAttribute::class, mappedBy: 'product', orphanRemoval: true)]
+    private Collection $attributes;
+
 
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->attributes = new ArrayCollection();
     }
 
 
@@ -140,6 +147,36 @@ class Product
             // set the owning side to null (unless already changed)
             if ($image->getProduct() === $this) {
                 $image->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductAttribute>
+     */
+    public function getAttributes(): Collection
+    {
+        return $this->attributes;
+    }
+
+    public function addAttribute(ProductAttribute $attribute): static
+    {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes->add($attribute);
+            $attribute->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttribute(ProductAttribute $attribute): static
+    {
+        if ($this->attributes->removeElement($attribute)) {
+            // set the owning side to null (unless already changed)
+            if ($attribute->getProduct() === $this) {
+                $attribute->setProduct(null);
             }
         }
 
