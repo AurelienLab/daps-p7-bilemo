@@ -24,6 +24,9 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ean_code = null;
 
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?ProductBrand $brand = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,18 @@ class Product
     public function setEanCode(?string $ean_code): static
     {
         $this->ean_code = $ean_code;
+
+        return $this;
+    }
+
+    public function getBrand(): ?ProductBrand
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(?ProductBrand $brand): static
+    {
+        $this->brand = $brand;
 
         return $this;
     }
