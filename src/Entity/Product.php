@@ -7,8 +7,10 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ApiResource(normalizationContext: ['groups' => ['product']])]
 #[ApiResource]
 class Product
 {
@@ -17,24 +19,30 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['product', 'product_brand'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product', 'product_brand'])]
     private ?string $reference = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product', 'product_brand'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['product', 'product_brand'])]
     private ?string $ean_code = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
+    #[Groups(['product'])]
     private ?ProductBrand $brand = null;
 
     /**
      * @var Collection<int, ProductImage>
      */
     #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['product', 'product_brand'])]
     private Collection $images;
 
 

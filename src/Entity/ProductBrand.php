@@ -7,42 +7,53 @@ use App\Repository\ProductBrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductBrandRepository::class)]
+#[ApiResource(normalizationContext: ['groups' => ['product_brand']])]
 #[ApiResource]
 class ProductBrand
 {
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product', 'product_brand'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Product>
      */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'brand')]
+    #[Groups(['product_brand'])]
     private Collection $products;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['product', 'product_brand'])]
     private ?string $logo_path = null;
+
 
     public function __construct()
     {
         $this->products = new ArrayCollection();
     }
 
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
+
     public function getName(): ?string
     {
         return $this->name;
     }
+
 
     public function setName(string $name): static
     {
@@ -51,6 +62,7 @@ class ProductBrand
         return $this;
     }
 
+
     /**
      * @return Collection<int, Product>
      */
@@ -58,6 +70,7 @@ class ProductBrand
     {
         return $this->products;
     }
+
 
     public function addProduct(Product $product): static
     {
@@ -68,6 +81,7 @@ class ProductBrand
 
         return $this;
     }
+
 
     public function removeProduct(Product $product): static
     {
@@ -81,10 +95,12 @@ class ProductBrand
         return $this;
     }
 
+
     public function getLogoPath(): ?string
     {
         return $this->logo_path;
     }
+
 
     public function setLogoPath(?string $logo_path): static
     {
@@ -92,4 +108,6 @@ class ProductBrand
 
         return $this;
     }
+
+
 }

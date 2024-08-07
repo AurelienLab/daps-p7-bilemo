@@ -4,10 +4,13 @@ namespace App\Entity;
 
 use App\Repository\ProductImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductImageRepository::class)]
 class ProductImage
 {
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,17 +21,21 @@ class ProductImage
     private ?Product $product = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product', 'product_brand'])]
     private ?string $imagePath = null;
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
+
     public function getProduct(): ?Product
     {
         return $this->product;
     }
+
 
     public function setProduct(?Product $product): static
     {
@@ -37,10 +44,12 @@ class ProductImage
         return $this;
     }
 
+
     public function getImagePath(): ?string
     {
         return $this->imagePath;
     }
+
 
     public function setImagePath(string $imagePath): static
     {
@@ -48,4 +57,6 @@ class ProductImage
 
         return $this;
     }
+
+
 }
