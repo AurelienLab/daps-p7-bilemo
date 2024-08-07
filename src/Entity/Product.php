@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource]
 class Product
 {
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,23 +34,27 @@ class Product
     /**
      * @var Collection<int, ProductImage>
      */
-    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
+
 
     public function __construct()
     {
         $this->images = new ArrayCollection();
     }
 
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
+
     public function getReference(): ?string
     {
         return $this->reference;
     }
+
 
     public function setReference(string $reference): static
     {
@@ -57,10 +63,12 @@ class Product
         return $this;
     }
 
+
     public function getName(): ?string
     {
         return $this->name;
     }
+
 
     public function setName(string $name): static
     {
@@ -69,10 +77,12 @@ class Product
         return $this;
     }
 
+
     public function getEanCode(): ?string
     {
         return $this->ean_code;
     }
+
 
     public function setEanCode(?string $ean_code): static
     {
@@ -81,10 +91,12 @@ class Product
         return $this;
     }
 
+
     public function getBrand(): ?ProductBrand
     {
         return $this->brand;
     }
+
 
     public function setBrand(?ProductBrand $brand): static
     {
@@ -93,6 +105,7 @@ class Product
         return $this;
     }
 
+
     /**
      * @return Collection<int, ProductImage>
      */
@@ -100,6 +113,7 @@ class Product
     {
         return $this->images;
     }
+
 
     public function addImage(ProductImage $image): static
     {
@@ -110,6 +124,7 @@ class Product
 
         return $this;
     }
+
 
     public function removeImage(ProductImage $image): static
     {
@@ -122,4 +137,6 @@ class Product
 
         return $this;
     }
+
+
 }
