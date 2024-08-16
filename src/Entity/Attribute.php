@@ -22,6 +22,7 @@ class Attribute
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product'])]
     private ?string $name = null;
 
 

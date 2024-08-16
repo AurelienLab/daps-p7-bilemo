@@ -49,6 +49,7 @@ class Product
      * @var Collection<int, ProductAttribute>
      */
     #[ORM\OneToMany(targetEntity: ProductAttribute::class, mappedBy: 'product', orphanRemoval: true)]
+    #[Groups(['product'])]
     private Collection $attributes;
 
 
@@ -153,6 +154,7 @@ class Product
         return $this;
     }
 
+
     /**
      * @return Collection<int, ProductAttribute>
      */
@@ -160,6 +162,7 @@ class Product
     {
         return $this->attributes;
     }
+
 
     public function addAttribute(ProductAttribute $attribute): static
     {
@@ -170,6 +173,7 @@ class Product
 
         return $this;
     }
+
 
     public function removeAttribute(ProductAttribute $attribute): static
     {
