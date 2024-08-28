@@ -39,24 +39,24 @@ class Product
     private ?ProductBrand $brand = null;
 
     /**
-     * @var Collection<int, ProductImage>
-     */
-    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['product', 'product_brand'])]
-    private Collection $images;
-
-    /**
      * @var Collection<int, ProductAttribute>
      */
     #[ORM\OneToMany(targetEntity: ProductAttribute::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['product'])]
     private Collection $attributes;
 
+    /**
+     * @var Collection<int, Media>
+     */
+    #[ORM\ManyToMany(targetEntity: Media::class)]
+    #[Groups(['product'])]
+    private Collection $medias;
+
 
     public function __construct()
     {
-        $this->images = new ArrayCollection();
         $this->attributes = new ArrayCollection();
+        $this->medias = new ArrayCollection();
     }
 
 
@@ -123,39 +123,6 @@ class Product
 
 
     /**
-     * @return Collection<int, ProductImage>
-     */
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-
-    public function addImage(ProductImage $image): static
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setProduct($this);
-        }
-
-        return $this;
-    }
-
-
-    public function removeImage(ProductImage $image): static
-    {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getProduct() === $this) {
-                $image->setProduct(null);
-            }
-        }
-
-        return $this;
-    }
-
-
-    /**
      * @return Collection<int, ProductAttribute>
      */
     public function getAttributes(): Collection
@@ -183,6 +150,33 @@ class Product
                 $attribute->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, Media>
+     */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+
+    public function addMedia(Media $media): static
+    {
+        if (!$this->medias->contains($media)) {
+            $this->medias->add($media);
+        }
+
+        return $this;
+    }
+
+
+    public function removeMedia(Media $media): static
+    {
+        $this->medias->removeElement($media);
 
         return $this;
     }

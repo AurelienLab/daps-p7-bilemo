@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ProductBrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,9 +33,10 @@ class ProductBrand
     #[Groups(['product_brand'])]
     private Collection $products;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['product', 'product_brand'])]
-    private ?string $logoPath = null;
+    #[ORM\ManyToOne]
+    #[ApiProperty(types: ['https://schema.org/image'])]
+    #[Groups(['product_brand'])]
+    private ?Media $logo = null;
 
 
     public function __construct()
@@ -96,15 +98,15 @@ class ProductBrand
     }
 
 
-    public function getLogoPath(): ?string
+    public function getLogo(): ?Media
     {
-        return $this->logoPath;
+        return $this->logo;
     }
 
 
-    public function setLogoPath(?string $logo_path): static
+    public function setLogo(?Media $logo): static
     {
-        $this->logoPath = $logo_path;
+        $this->logo = $logo;
 
         return $this;
     }
