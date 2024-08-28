@@ -32,7 +32,7 @@ class Product
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['product', 'product_brand'])]
-    private ?string $ean_code = null;
+    private ?string $eanCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[Groups(['product'])]
@@ -48,7 +48,7 @@ class Product
     /**
      * @var Collection<int, ProductAttribute>
      */
-    #[ORM\OneToMany(targetEntity: ProductAttribute::class, mappedBy: 'product', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ProductAttribute::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['product'])]
     private Collection $attributes;
 
@@ -96,13 +96,13 @@ class Product
 
     public function getEanCode(): ?string
     {
-        return $this->ean_code;
+        return $this->eanCode;
     }
 
 
     public function setEanCode(?string $ean_code): static
     {
-        $this->ean_code = $ean_code;
+        $this->eanCode = $ean_code;
 
         return $this;
     }

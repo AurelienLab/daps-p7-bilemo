@@ -34,7 +34,7 @@ class ProductBrand
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['product', 'product_brand'])]
-    private ?string $logo_path = null;
+    private ?string $logoPath = null;
 
 
     public function __construct()
@@ -98,13 +98,13 @@ class ProductBrand
 
     public function getLogoPath(): ?string
     {
-        return $this->logo_path;
+        return $this->logoPath;
     }
 
 
     public function setLogoPath(?string $logo_path): static
     {
-        $this->logo_path = $logo_path;
+        $this->logoPath = $logo_path;
 
         return $this;
     }
