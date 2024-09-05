@@ -4,14 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AttributeRepository;
-use App\Repository\ProductBrandRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AttributeRepository::class)]
-#[ApiResource]
+#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
 class Attribute
 {
 

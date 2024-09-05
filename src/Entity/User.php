@@ -2,12 +2,46 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\Timestampable;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
+#[ApiResource(
+    uriTemplate : "/customers/{customerId}/users/{id}",
+    operations  : [new Get(), new Patch(), new Put(), new Delete()],
+    uriVariables: [
+        'id' => new Link(
+            fromClass: User::class,
+        ),
+        'customerId' => new Link(
+            toProperty: 'customer',
+            fromClass : Customer::class,
+            security  : "is_granted('CUSTOMER_MANAGE_USERS', customer)"
+        )
+    ]
+)]
+#[ApiResource(
+    uriTemplate : "/customers/{customerId}/users",
+    operations  : [new GetCollection(), new Post()],
+    uriVariables: [
+        'customerId' => new Link(
+            toProperty: 'customer',
+            fromClass : Customer::class,
+            security  : "is_granted('CUSTOMER_MANAGE_USERS', customer)"
+        )
+    ]
+)]
 class User implements TimestampableInterface
 {
 
@@ -97,10 +131,12 @@ class User implements TimestampableInterface
         return $this;
     }
 
+
     public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
+
 
     public function setCustomer(?Customer $customer): static
     {

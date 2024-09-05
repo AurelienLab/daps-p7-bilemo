@@ -12,7 +12,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductBrandRepository::class)]
 #[ApiResource(normalizationContext: ['groups' => ['product_brand']])]
-#[ApiResource]
+#[ApiResource(
+    security: "is_granted('ROLE_ADMIN')",
+)]
 class ProductBrand
 {
 

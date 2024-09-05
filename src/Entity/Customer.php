@@ -28,13 +28,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations            : [
         new GetCollection(),
         new Post(validationContext: ['groups' => ['Default', 'customer:create']], processor: UserPasswordHasher::class),
-        new Get(),
+        new Get(security: "is_granted('CUSTOMER_SHOW_CUSTOMER', object)"),
         new Put(processor: UserPasswordHasher::class),
         new Patch(processor: UserPasswordHasher::class),
         new Delete(),
     ],
     normalizationContext  : ['groups' => ['customer:read']],
     denormalizationContext: ['groups' => ['customer:create', 'customer:update']],
+    security              : "is_granted('ROLE_ADMIN')",
 )]
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableInterface
 {
@@ -57,6 +58,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Tim
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['customer:read', 'customer:create'])]
     private array $roles = [];
 
     /**
