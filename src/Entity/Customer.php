@@ -4,18 +4,38 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\Timestampable;
 use App\Repository\CustomerRepository;
+use App\State\UserPasswordHasher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
+#[ApiResource(
+    operations            : [
+        new GetCollection(),
+        new Post(validationContext: ['groups' => ['Default', 'customer:create']], processor: UserPasswordHasher::class),
+        new Get(),
+        new Put(processor: UserPasswordHasher::class),
+        new Patch(processor: UserPasswordHasher::class),
+        new Delete(),
+    ],
+    normalizationContext  : ['groups' => ['customer:read']],
+    denormalizationContext: ['groups' => ['customer:create', 'customer:update']],
+)]
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface, TimestampableInterface
 {
 
@@ -25,8 +45,11 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Tim
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['customer:read'])]
     private ?int $id = null;
 
+    #[Assert\Email]
+    #[Groups(['customer:create', 'customer:update', 'customer:read'])]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -43,6 +66,11 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Tim
     #[ApiProperty(readable: false)]
     private ?string $password = null;
 
+    #[Assert\NotBlank(groups: ['customer:create'])]
+    #[Groups(['customer:create', 'customer:update'])]
+    private ?string $plainPassword = null;
+
+    #[Groups(['customer:create', 'customer:update', 'customer:read'])]
     #[ORM\Column(length: 255)]
     private ?string $companyName = null;
 
@@ -186,6 +214,18 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Tim
         }
 
         return $this;
+    }
+
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+
+    public function setPlainPassword(?string $plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
     }
 
 
