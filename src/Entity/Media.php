@@ -48,7 +48,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         )
     ],
     outputFormats       : ['jsonld' => ['application/ld+json']],
-    normalizationContext: ['groups' => ['media']]
+    normalizationContext: ['groups' => ['media']],
+    security            : "is_granted('ROLE_ADMIN')"
 )]
 class Media
 {
