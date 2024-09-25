@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Media;
 use App\Entity\Product;
 use App\Entity\ProductBrand;
 use App\Entity\ProductImage;
@@ -35,9 +36,9 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             ;
 
             for ($j = 0; $j < $faker->numberBetween(0, 4); $j++) {
-                $image = new ProductImage();
-                $image->setImagePath($faker->imageUrl());
-                $product->addImage($image);
+                $image = new Media();
+                $image->setFilePath($faker->imageUrl());
+                $product->addMedia($image);
             }
 
             $manager->persist($product);

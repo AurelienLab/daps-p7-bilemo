@@ -59,7 +59,7 @@ class Product
     /**
      * @var Collection<int, Media>
      */
-    #[ORM\ManyToMany(targetEntity: Media::class)]
+    #[ORM\ManyToMany(targetEntity: Media::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['product'])]
     private Collection $medias;
 
