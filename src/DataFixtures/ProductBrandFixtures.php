@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Media;
 use App\Entity\ProductBrand;
-use Bezhanov\Faker\Provider\Device;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -39,10 +39,19 @@ class ProductBrandFixtures extends Fixture
         foreach ($brands as $brand) {
 
             $productBrand = new ProductBrand();
+
             $productBrand
                 ->setName($brand)
-                ->setLogoPath($faker->optional(0.7)->imageUrl(word: $brand))
             ;
+
+            // Randomly create logo
+            $withLogo = $faker->boolean(70);
+            if ($withLogo) {
+                $logo = new Media();
+                $logo->setFilePath($faker->imageUrl(word: $brand));
+
+                $productBrand->setLogo($logo);
+            }
 
             $manager->persist($productBrand);
         }

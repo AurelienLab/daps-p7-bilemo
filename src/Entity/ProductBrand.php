@@ -35,7 +35,7 @@ class ProductBrand
     #[Groups(['product_brand'])]
     private Collection $products;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Media::class, cascade: ['persist'])]
     #[ApiProperty(types: ['https://schema.org/image'])]
     #[Groups(['product_brand'])]
     private ?Media $logo = null;
