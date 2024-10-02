@@ -10,38 +10,44 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\CreateProvider;
 use App\Entity\Trait\Timestampable;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
 #[ApiResource(
     uriTemplate : "/customers/{customerId}/users/{id}",
     operations  : [new Get(), new Patch(), new Put(), new Delete()],
     uriVariables: [
-        'id' => new Link(
-            fromClass: User::class,
-        ),
         'customerId' => new Link(
             toProperty: 'customer',
             fromClass : Customer::class,
             security  : "is_granted('CUSTOMER_MANAGE_USERS', customer)"
-        )
-    ]
+        ),
+        'id' => new Link(
+            fromClass: User::class,
+        ),
+    ],
 )]
 #[ApiResource(
     uriTemplate : "/customers/{customerId}/users",
-    operations  : [new GetCollection(), new Post()],
+    operations  : [
+        new GetCollection(),
+        new Post(
+            provider: CreateProvider::class,
+        ),
+    ],
     uriVariables: [
         'customerId' => new Link(
             toProperty: 'customer',
             fromClass : Customer::class,
             security  : "is_granted('CUSTOMER_MANAGE_USERS', customer)"
         )
-    ]
+    ],
 )]
+#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
 class User implements TimestampableInterface
 {
 
@@ -66,7 +72,6 @@ class User implements TimestampableInterface
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
 
