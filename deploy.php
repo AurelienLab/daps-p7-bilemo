@@ -9,7 +9,7 @@ require 'recipe/symfony.php';
 set('repository', 'git@github.com:AurelienLab/daps-p7-bilemo.git');
 
 add('shared_files', []);
-add('shared_dirs', []);
+add('shared_dirs', ['config/jwt']);
 add('writable_dirs', []);
 
 // Hosts
