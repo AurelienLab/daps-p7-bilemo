@@ -9,38 +9,56 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\CreateProvider;
 use App\Entity\Trait\Timestampable;
 use App\Repository\UserRepository;
+use App\State\TimestampableProcessor;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
 #[ApiResource(
-    uriTemplate : "/customers/{customerId}/users/{id}",
-    operations  : [new Get(), new Patch(), new Put(), new Delete()],
-    uriVariables: [
-        'id' => new Link(
-            fromClass: User::class,
-        ),
+    uriTemplate           : "/customers/{customerId}/users/{id}",
+    operations            : [
+        new Get(),
+        new Patch(),
+        new Delete()
+    ],
+    uriVariables          : [
         'customerId' => new Link(
             toProperty: 'customer',
             fromClass : Customer::class,
             security  : "is_granted('CUSTOMER_MANAGE_USERS', customer)"
-        )
-    ]
+        ),
+        'id' => new Link(
+            fromClass: User::class
+        ),
+    ],
+    normalizationContext  : ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:put']],
+    processor             : TimestampableProcessor::class,
 )]
 #[ApiResource(
     uriTemplate : "/customers/{customerId}/users",
-    operations  : [new GetCollection(), new Post()],
+    operations  : [
+        new GetCollection(),
+        new Post(
+            provider: CreateProvider::class,
+        ),
+    ],
     uriVariables: [
         'customerId' => new Link(
             toProperty: 'customer',
             fromClass : Customer::class,
             security  : "is_granted('CUSTOMER_MANAGE_USERS', customer)"
         )
-    ]
+    ],
+    processor   : TimestampableProcessor::class,
+)]
+#[ApiResource(
+    security : "is_granted('ROLE_ADMIN')",
+    processor: TimestampableProcessor::class,
 )]
 class User implements TimestampableInterface
 {
@@ -54,20 +72,24 @@ class User implements TimestampableInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", "user:put"])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", "user:put"])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", "user:put"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:read", "user:put"])]
     private ?string $phone = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Customer $customer = null;
+    private Customer $customer;
 
 
     public function getId(): ?int

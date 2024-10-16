@@ -30,7 +30,12 @@ class MediaNormalizer implements NormalizerInterface
     {
         $context[self::ALREADY_CALLED] = true;
 
-        $object->fileUrl = $this->storage->resolveUri($object, 'file');
+        if (filter_var($object->getFilePath(), FILTER_VALIDATE_URL)) {
+            $object->fileUrl = $object->getFilePath();
+        } else {
+            $object->fileUrl = $this->storage->resolveUri($object, 'file');
+        }
+
 
         return $this->normalizer->normalize($object, $format, $context);
     }

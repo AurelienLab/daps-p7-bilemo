@@ -10,19 +10,33 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\ProductRepository;
+use App\State\ProductProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource(normalizationContext: ['groups' => ['product']])]
-#[GetCollection]
-#[Get]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Put(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
+#[ApiResource(
+    operations            : [
+        new Get(),
+        new GetCollection(),
+    ],
+    normalizationContext  : ['groups' => ['product:read']],
+    denormalizationContext: ['groups' => ['product:write']],
+)]
+#[ApiResource(
+    operations            : [
+        new Post(),
+        new Put(),
+        new Delete(),
+        new Patch(),
+    ],
+    normalizationContext  : ['groups' => ['product:read']],
+    denormalizationContext: ['groups' => ['product:write']],
+    security              : "is_granted('ROLE_ADMIN')",
+)]
 class Product
 {
 
@@ -30,37 +44,38 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['product', 'product_brand'])]
+    #[Groups(['product:read', 'product_brand'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['product', 'product_brand'])]
+    #[Groups(['product:write', 'product:read', 'product_brand'])]
     private ?string $reference = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['product', 'product_brand'])]
+    #[Groups(['product:write', 'product:read', 'product_brand'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['product', 'product_brand'])]
+    #[Groups(['product:write', 'product:read', 'product_brand'])]
     private ?string $eanCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[Groups(['product'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['product:write', 'product:read'])]
     private ?ProductBrand $brand = null;
 
     /**
      * @var Collection<int, ProductAttribute>
      */
     #[ORM\OneToMany(targetEntity: ProductAttribute::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['product'])]
+    #[Groups(['product:read'])]
     private Collection $attributes;
 
     /**
      * @var Collection<int, Media>
      */
     #[ORM\ManyToMany(targetEntity: Media::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['product'])]
+    #[Groups(['product:read', 'product:write'])]
     private Collection $medias;
 
 

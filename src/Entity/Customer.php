@@ -79,7 +79,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Tim
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'customer', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'customer')]
     private Collection $users;
 
 

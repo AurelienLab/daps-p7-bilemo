@@ -19,6 +19,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[Vich\Uploadable]
 #[ApiResource(
+//    uriTemplate         : "/medias/{id}",
     types               : ['https://schema.org/MediaObject'],
     operations          : [
         new Get(),
@@ -61,7 +62,7 @@ class Media
     private ?int $id = null;
 
     #[ApiProperty(writable: false, types: ['https://schema.org/contentUrl'])]
-    #[Groups(['media', 'product', 'product_brand'])]
+    #[Groups(['media', 'product:read', 'product_brand'])]
     public ?string $fileUrl = null;
 
     #[ORM\Column(length: 255)]
@@ -85,7 +86,7 @@ class Media
     }
 
 
-    public function setFilePath(string $filePath): static
+    public function setFilePath(?string $filePath): static
     {
         $this->filePath = $filePath;
 

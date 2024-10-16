@@ -2,12 +2,30 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ProductAttributeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: ProductAttributeRepository::class)]
+#[ApiResource(
+    operations            : [
+        new Post(),
+        new Get(),
+        new Put(),
+        new Delete(),
+        new Patch()
+    ],
+    normalizationContext  : ['groups' => ['product-attribute:read']],
+    denormalizationContext: ['groups' => ['product-attribute:write']],
+    security              : "is_granted('ROLE_ADMIN')",
+)]
 class ProductAttribute
 {
 
@@ -19,14 +37,16 @@ class ProductAttribute
 
     #[ORM\ManyToOne(inversedBy: 'attributes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['product-attribute:read', 'product-attribute:write'])]
     private ?Product $product = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['product:read', 'product-attribute:read', 'product-attribute:write'])]
     private ?Attribute $attribute = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['product'])]
+    #[Groups(['product:read', 'product-attribute:read', 'product-attribute:write'])]
     private ?string $value = null;
 
 
@@ -78,7 +98,7 @@ class ProductAttribute
     }
 
 
-    #[Groups(['product'])]
+    #[Groups(['product:read'])]
     #[SerializedName('name')]
     public function getAttributeName(): string
     {
