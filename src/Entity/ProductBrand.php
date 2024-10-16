@@ -4,6 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ProductBrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,9 +17,22 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductBrandRepository::class)]
-#[ApiResource(normalizationContext: ['groups' => ['product_brand']])]
 #[ApiResource(
-    security: "is_granted('ROLE_ADMIN')",
+    operations          : [
+        new Get(),
+        new GetCollection(),
+    ],
+    normalizationContext: ['groups' => ['product_brand']],
+)]
+#[ApiResource(
+    operations          : [
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete()
+    ],
+    normalizationContext: ['groups' => ['product_brand']],
+    security            : "is_granted('ROLE_ADMIN')",
 )]
 class ProductBrand
 {
@@ -22,20 +41,21 @@ class ProductBrand
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['product:read', 'product_brand'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['product', 'product_brand'])]
+    #[Groups(['product:read', 'product_brand'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Product>
      */
-    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'brand')]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'brand', cascade: ['persist'])]
     #[Groups(['product_brand'])]
     private Collection $products;
 
-    #[ORM\ManyToOne(targetEntity: Media::class, cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: Media::class, cascade: ['persist', 'remove'])]
     #[ApiProperty(types: ['https://schema.org/image'])]
     #[Groups(['product_brand'])]
     private ?Media $logo = null;
