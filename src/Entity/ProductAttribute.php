@@ -12,6 +12,7 @@ use App\Repository\ProductAttributeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: ProductAttributeRepository::class)]
 #[ApiResource(
@@ -47,6 +48,7 @@ class ProductAttribute
 
     #[ORM\Column(length: 255)]
     #[Groups(['product:read', 'product-attribute:read', 'product-attribute:write'])]
+    #[NotBlank]
     private ?string $value = null;
 
 
