@@ -15,6 +15,7 @@ use App\Repository\UserRepository;
 use App\State\TimestampableProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -81,6 +82,7 @@ class User implements TimestampableInterface
 
     #[ORM\Column(length: 255)]
     #[Groups(["user:read", "user:put"])]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]

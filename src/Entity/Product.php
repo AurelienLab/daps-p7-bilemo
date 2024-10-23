@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\MaxDepth;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
@@ -49,14 +50,17 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Groups(['product:write', 'product:read', 'product_brand'])]
+    #[Assert\NotBlank]
     private ?string $reference = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['product:write', 'product:read', 'product_brand'])]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['product:write', 'product:read', 'product_brand'])]
+    #[Assert\NotBlank]
     private ?string $eanCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]

@@ -71,6 +71,7 @@ class Media
 
     #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'filePath')]
     #[Assert\NotNull]
+    #[Assert\Image]
     public ?File $file = null;
 
 
